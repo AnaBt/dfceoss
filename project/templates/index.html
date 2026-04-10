@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Integrada CNPJ</title>
+    <style>
+        :root {
+            --primary: #0047bb;
+            --secondary: #f0f2f5;
+            --text: #333;
+            --border: #ddd;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { color: var(--primary); }
+        
+        /* Estilo do Formulário */
+        .search-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            background: var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+        button {
+            grid-column: 1 / -1;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        button:hover { background: #00358a; }
+
+        /* Cartão da Empresa */
+        .empresa-header {
+            border-left: 5px solid var(--primary);
+            padding-left: 20px;
+            margin-bottom: 30px;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Tabelas */
+        .table-container { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        th { background-color: var(--secondary); }
+        tr:nth-child(even) { background-color: #fafafa; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            background: #e0e0e0;
+            font-weight: bold;
+        }
+        .text-muted {
+            color: #666;
+            font-size: 0.85em;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏛️ Sistema de Consulta CNPJ</h1>
+    
+    <form method="post" class="search-box">
+        <div class="form-group">
+            <label for="cnpj">CNPJ (8 dígitos base ou completo):</label>
+            <input type="text" id="cnpj" name="cnpj" placeholder="Ex: 00000053">
+        </div>
+        <div class="form-group">
+            <label for="razao">Razão Social:</label>
+            <input type="text" id="razao" name="razao" placeholder="Parte do nome...">
+        </div>
+        <div class="form-group">
+            <label for="uf">UF (Filtro):</label>
+            <select id="uf" name="uf">
+                <option value="">Brasil (Todas)</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="municipio">Município (Filtro por NOME):</label>
+            <input type="text" id="municipio" name="municipio" placeholder="Ex: JOINVILLE">
+        </div>
+        <div class="form-group">
+            <label for="situacao">Situação Cadastral (Filtro):</label>
+            <select id="situacao" name="situacao">
+                <option value="">Qualquer</option>
+                <option value="02">Ativa</option>
+                <option value="03">Suspensa</option>
+                <option value="04">Inapta</option>
+                <option value="08">Baixada</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="cnae">CNAE Principal (Filtro):</label>
+            <input type="text" id="cnae" name="cnae" placeholder="Ex: 6204000">
+        </div>
+        <button type="submit">🔍 Realizar Consulta Detalhada</button>
+    </form>
+
+    {% if empresa %}
+        <div class="empresa-header">
+            <h2>{{ empresa.razao_social }}</h2>
+            <p>
+                <strong>CNPJ Base:</strong> {{ empresa.cnpj_basico }}<br>
+                <strong>Capital Social:</strong> R$ {{ empresa.capital_social }}<br>
+                <strong>Natureza Jurídica:</strong> {{ empresa.natureza_juridica }} - {{ empresa.natureza_descricao or 'Não informada' }}
+            </p>
+        </div>
+
+        <h3>📍 Estabelecimentos e Filiais ({{ estabelecimentos|length }})</h3>
+        <div class="table-container">
+            {% if estabelecimentos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>CNPJ Completo</th>
+                        <th>Nome Fantasia</th>
+                        <th>Atividade (CNAE)</th>
+                        <th>Cidade / UF</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for est in estabelecimentos %}
+                    <tr>
+                        <td><strong>{{ empresa.cnpj_basico }}/{{ est.cnpj_ordem }}-{{ est.cnpj_dv }}</strong></td>
+                        <td>{{ est.nome_fantasia or '---' }}</td>
+                        <td>
+                            <span class="badge">{{ est.cnae_principal }}</span>
+                            <span class="text-muted">{{ est.cnae_descricao or 'Descrição não disponível' }}</span>
+                        </td>
+                        <td><strong>{{ est.municipio_nome or est.municipio }}</strong> / {{ est.uf }}</td>
+                        <td>
+                            {% if est.situacao_cadastral == '02' %} Ativa (02)
+                            {% elif est.situacao_cadastral == '04' %} Inapta (04)
+                            {% elif est.situacao_cadastral == '08' %} Baixada (08)
+                            {% else %} {{ est.situacao_cadastral }} {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><em>Nenhum estabelecimento encontrado com os filtros aplicados.</em></p>
+            {% endif %}
+        </div>
+
+        <h3>👥 Quadro de Sócios e Administradores ({{ socios|length }})</h3>
+        <div class="table-container">
+            {% if socios %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome do Sócio / Razão Social</th>
+                        <th>Qualificação (Código)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in socios %}
+                    <tr>
+                        <td><strong>{{ s.nome_socio }}</strong></td>
+                        <td>{{ s.qualificacao_socio }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p><em>Nenhum dado de sócio disponível para esta empresa.</em></p>
+            {% endif %}
+        </div>
+
+    {% elif erro %}
+        <div style="background: #fff2f2; color: #cc0000; padding: 15px; border-radius: 4px; border: 1px solid #ffcccc; margin-bottom: 20px;">
+            ⚠️ {{ erro }}
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
