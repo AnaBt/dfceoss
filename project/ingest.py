@@ -4,6 +4,7 @@ import duckdb
 BASE_DIR = os.path.dirname(__file__)  # pasta do ingest.py
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
+#SECAO DE MAPEAMENTO DE DADOS
 empresas_path = os.path.join(DATA_DIR, "K3241.K03200Y1.D60314.EMPRECSV")
 esta_path = os.path.join(DATA_DIR, "K3241.K03200Y1.D60314.ESTABELE")
 socios_path = os.path.join(DATA_DIR, "K3241.K03200Y1.D60314.SOCIOCSV")
@@ -11,8 +12,7 @@ cnaes_path = os.path.join(DATA_DIR, "F.K03200$Z.D60314.CNAECSV")
 municipios_path = os.path.join(DATA_DIR, "F.K03200$Z.D60314.MUNICCSV")
 natureza_path = os.path.join(DATA_DIR, "F.K03200$Z.D60314.NATJUCSV")
 
-# DICA DE SÊNIOR: Para evitar que o SQL confunda as barras invertidas do Windows (\) 
-# com códigos de escape (como \n), vamos converter as barras para barras normais (/)
+
 cnaes_path = cnaes_path.replace('\\', '/')
 municipios_path = municipios_path.replace('\\', '/')
 natureza_path = natureza_path.replace('\\', '/')
@@ -21,7 +21,6 @@ os.makedirs("db", exist_ok=True)
 con = duckdb.connect("db/cnpj.duckdb")
 
 print("Iniciando ingestão")
-#empresas "00000053";"CONDOMINIO EDIFICIO MIRIAM";"3085";"19";"0,00";"05";""
 
 con.execute(f"""
 CREATE OR REPLACE TABLE empresas_padronizado AS 

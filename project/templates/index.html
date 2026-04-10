@@ -10,6 +10,7 @@
             --secondary: #f0f2f5;
             --text: #333;
             --border: #ddd;
+            --success: #28a745;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -29,7 +30,7 @@
         }
         h1, h2, h3 { color: var(--primary); }
         
-        /* Estilo do Formulário */
+        /* Estilos do Formulário */
         .search-box {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -41,12 +42,9 @@
         }
         .form-group { display: flex; flex-direction: column; }
         label { font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
-        input, select {
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-        button {
+        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 4px; }
+        
+        .btn-primary {
             grid-column: 1 / -1;
             padding: 12px;
             background: var(--primary);
@@ -58,9 +56,21 @@
             font-size: 1em;
             transition: background 0.3s;
         }
-        button:hover { background: #00358a; }
+        .btn-primary:hover { background: #00358a; }
+        
+        .btn-success {
+            padding: 8px 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .btn-success:hover { background: #218838; }
 
-        /* Cartão da Empresa */
         .empresa-header {
             border-left: 5px solid var(--primary);
             padding-left: 20px;
@@ -68,38 +78,19 @@
             background: #fafafa;
             padding: 20px;
             border-radius: 0 8px 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         /* Tabelas */
         .table-container { overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            margin-bottom: 30px;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 12px;
-            text-align: left;
-            font-size: 0.9em;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 30px; }
+        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; font-size: 0.9em; }
         th { background-color: var(--secondary); }
         tr:nth-child(even) { background-color: #fafafa; }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            background: #e0e0e0;
-            font-weight: bold;
-        }
-        .text-muted {
-            color: #666;
-            font-size: 0.85em;
-            display: block;
-            margin-top: 4px;
-        }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; background: #e0e0e0; font-weight: bold; }
+        .text-muted { color: #666; font-size: 0.85em; display: block; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -108,6 +99,8 @@
     <h1>🏛️ Sistema de Consulta CNPJ</h1>
     
     <form method="post" class="search-box">
+        <input type="hidden" name="acao" value="buscar_lista">
+        
         <div class="form-group">
             <label for="cnpj">CNPJ (8 dígitos base ou completo):</label>
             <input type="text" id="cnpj" name="cnpj" placeholder="Ex: 00000053">
@@ -149,17 +142,57 @@
             <label for="cnae">CNAE Principal (Filtro):</label>
             <input type="text" id="cnae" name="cnae" placeholder="Ex: 6204000">
         </div>
-        <button type="submit">🔍 Realizar Consulta Detalhada</button>
+        <button type="submit" class="btn-primary">🔍 Realizar Consulta</button>
     </form>
 
-    {% if empresa %}
+    {% if empresas_lista %}
+        <h3>🏢 Selecione a Empresa ({{ empresas_lista|length }} resultados)</h3>
+        <p class="text-muted">A sua busca retornou múltiplos resultados. Selecione a matriz desejada abaixo para ver filiais e sócios.</p>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>CNPJ Básico</th>
+                        <th>Razão Social</th>
+                        <th>Natureza Jurídica</th>
+                        <th style="width: 120px; text-align: center;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in empresas_lista %}
+                    <tr>
+                        <td><strong>{{ emp.cnpj_basico }}</strong></td>
+                        <td>{{ emp.razao_social }}</td>
+                        <td>{{ emp.natureza_descricao or '---' }}</td>
+                        <td>
+                            <form method="post" style="margin: 0;">
+                                <input type="hidden" name="acao" value="ver_dossie">
+                                <input type="hidden" name="cnpj_alvo" value="{{ emp.cnpj_basico }}">
+                                <input type="hidden" name="uf" value="{{ filtros.uf or '' }}">
+                                <input type="hidden" name="municipio" value="{{ filtros.municipio or '' }}">
+                                <input type="hidden" name="situacao" value="{{ filtros.situacao or '' }}">
+                                <input type="hidden" name="cnae" value="{{ filtros.cnae or '' }}">
+                                <button type="submit" class="btn-success">Ver Dossiê</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% elif empresa %}
         <div class="empresa-header">
-            <h2>{{ empresa.razao_social }}</h2>
-            <p>
-                <strong>CNPJ Base:</strong> {{ empresa.cnpj_basico }}<br>
-                <strong>Capital Social:</strong> R$ {{ empresa.capital_social }}<br>
-                <strong>Natureza Jurídica:</strong> {{ empresa.natureza_juridica }} - {{ empresa.natureza_descricao or 'Não informada' }}
-            </p>
+            <div>
+                <h2>{{ empresa.razao_social }}</h2>
+                <p>
+                    <strong>CNPJ Base:</strong> {{ empresa.cnpj_basico }}<br>
+                    <strong>Capital Social:</strong> R$ {{ empresa.capital_social }}<br>
+                    <strong>Natureza Jurídica:</strong> {{ empresa.natureza_juridica }} - {{ empresa.natureza_descricao or 'Não informada' }}
+                </p>
+            </div>
+            <a href="/" style="color: var(--primary); text-decoration: none; font-weight: bold; border: 1px solid var(--primary); padding: 8px 15px; border-radius: 4px;">Nova Busca</a>
         </div>
 
         <h3>📍 Estabelecimentos e Filiais ({{ estabelecimentos|length }})</h3>
