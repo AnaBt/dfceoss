@@ -82,9 +82,7 @@ pip install -r requirements.txt
 ### Passo 2: Preparar os Dados Brutos (ETL)
 Como os dados originais não estão versionados no GitHub devido ao tamanho:
 
-* Crie uma pasta chamada data no mesmo nível do arquivo `ingest.py`.
-
-* Coloque os arquivos descompactados da Receita Federal dentro desta pasta (ex: K3241.K03200Y1.D60314.EMPRECSV, F.K03200$Z.D60314.CNAECSV, etc).
+* Coloque os arquivos descompactados da Receita Federal dentro desta pasta `data` (ex: K3241.K03200Y1.D60314.EMPRECSV, F.K03200$Z.D60314.CNAECSV, etc).
 
 Exemplo : 
 
