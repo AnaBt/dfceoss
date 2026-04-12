@@ -5,7 +5,7 @@ import duckdb
 
 app = FastAPI()
 templates = Jinja2Templates(directory="./project/templates")
-con = duckdb.connect("db/cnpj.duckdb")
+con = duckdb.connect("project/db/cnpj.duckdb")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
