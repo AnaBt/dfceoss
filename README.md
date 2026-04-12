@@ -12,7 +12,7 @@ No mundo ideal, você rodaria um script e ele faria o download de tudo. Na prát
 
 ⚠️Portanto, para testar esta aplicação, **os dados originais precisam ser baixados e extraidos manualmente** , os dados são:
 * Empresa1
-* Social1 
+* Socios1 
 * Estabelecimentos1
 * Municipios
 * Naturezas
@@ -86,7 +86,7 @@ Como os dados originais não estão versionados no GitHub devido ao tamanho:
 
   São eles:
 * Empresa1
-* Social1 
+* Socios1 
 * Estabelecimentos1
 * Municipios
 * Naturezas
