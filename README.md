@@ -84,7 +84,7 @@ Como os dados originais não estão versionados no GitHub devido ao tamanho:
 
 * Coloque os arquivos descompactados da Receita Federal dentro desta pasta `data` (ex: K3241.K03200Y1.D60314.EMPRECSV, F.K03200$Z.D60314.CNAECSV, etc).
 
-  São eles:
+São eles:
 * Empresa1
 * Socios1 
 * Estabelecimentos1
@@ -92,7 +92,7 @@ Como os dados originais não estão versionados no GitHub devido ao tamanho:
 * Naturezas
 * Cnaes
 
-Exemplo : 
+Descompacte todos , deverá se parecer com : 
 
 data/  
 ├── F.K03200$Z.D60314.CNAECSV  
