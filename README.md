@@ -111,5 +111,9 @@ python ingest.py
 (O script criará automaticamente uma pasta db contendo o arquivo cnpj.duckdb formatado e pronto para uso).
 
 ### Passo 4: Acessar o Sistema
-Abra o seu navegador e acesse a interface através do link:
-http://localhost:8000
+```bash
+cd ..
+uvicorn app:app
+```
+Abra no seu navegador o link gerado pelo uvicorn 
+
