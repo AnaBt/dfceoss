@@ -66,7 +66,7 @@ Para viabilizar a execução local e manter o repositório leve para avaliação
 Abra o terminal e clone o projeto para a sua máquina:
 ```bash
 git clone https://github.com/AnaBt/dfceoss
-cd dfCeos
+cd dfceoss
 
 python -m venv .venv
 
