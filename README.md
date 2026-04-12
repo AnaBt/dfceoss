@@ -18,7 +18,7 @@ No mundo ideal, você rodaria um script e ele faria o download de tudo. Na prát
 * Naturezas
 * Cnaes
 
-Os resultados extraidos devem ser colocados na pasta `project `dentro da pasta data
+Os resultados extraidos devem ser colocados dentro da pasta  `data ` que esta dentro de `project `
 
 ## 🧠 Arquitetura e Estratégia de Memória
 
